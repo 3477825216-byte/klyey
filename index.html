@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="renderer" content="webkit" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1,minimum-scale=1,user-scalable=no" />
+    <title>检测报告查验</title>
+    <style>
+        /* 全局样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "微软雅黑", Arial, sans-serif;
+        }
+        body {
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        /* 核心报告面板 - 白色背景+深灰色边框 */
+        .report-panel {
+            background-color: #ffffff;
+            border: 2px solid #666666; /* 深灰色边框 */
+            border-radius: 2px;
+            padding: 30px;
+            max-width: 1000px;
+            margin: 0 auto 20px;
+            position: relative;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23eeeeee' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+        /* 已签发印章样式 */
+        .seal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+        }
+        /* 标题样式 */
+        .report-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        /* 合格结果样式 */
+        .result {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .result .status {
+            font-size: 32px;
+            color: #009900;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .result .desc {
+            font-size: 14px;
+            color: #666;
+        }
+        /* 报告表格样式 */
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 16px;
+            line-height: 1.8;
+        }
+        .report-table th {
+            text-align: left;
+            font-weight: bold;
+            color: #333;
+            width: 120px;
+            padding: 5px 0;
+        }
+        .report-table td {
+            color: #333;
+            padding: 5px 0;
+        }
+        /* 打卡记录面板 */
+        .checkin-panel {
+            background-color: #444444;
+            color: #ffffff;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .checkin-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        .checkin-desc {
+            font-size: 12px;
+            color: #cccccc;
+            margin-bottom: 20px;
+        }
+        .checkin-item {
+            background-color: #555555;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #888;
+            margin-right: 15px;
+        }
+        .checkin-name {
+            font-size: 16px;
+            margin-right: 20px;
+            min-width: 60px;
+        }
+        .checkin-log {
+            font-size: 14px;
+            color: #ffffff;
+        }
+        .checkin-status {
+            color: #00ff00;
+        }
+        /* 页脚样式 */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #999;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- 检测报告主面板（白色背景+深灰色边框） -->
+    <div class="report-panel">
+        <!-- 已签发印章 -->
+        <img src="data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='30' r='25' fill='none' stroke='%23009900' stroke-width='2'/%3E%3Ctext x='30' y='33' font-family='微软雅黑' font-size='12' text-anchor='middle' fill='%23009900'%3E已签发%3C/text%3E%3C/svg%3E" class="seal" />
+        
+        <!-- 报告标题 -->
+        <div class="report-title">检测报告查验</div>
+        
+        <!-- 综合判定结果 -->
+        <div class="result">
+            <div class="status">合格</div>
+            <div class="desc">综合判定结果</div>
+        </div>
+        
+        <!-- 报告核心信息表格 -->
+        <table class="report-table">
+            <tr>
+                <th>报告编号</th>
+                <td>X020260317060</td>
+            </tr>
+            <tr>
+                <th>项目名称</th>
+                <td>昭通市昭阳区快乐幼儿园</td>
+            </tr>
+            <tr>
+                <th>委托单位</th>
+                <td>昭通市昭阳区快乐幼儿园</td>
+            </tr>
+            <tr>
+                <th>承检单位</th>
+                <td>云南祥欧消防检测评价有限公司</td>
+            </tr>
+            <tr>
+                <th>检测日期</th>
+                <td>2026年03月16日 至 2026年03月16日</td>
+            </tr>
+            <tr>
+                <th>检测人员</th>
+                <td>郑*瑞、张*东</td>
+            </tr>
+            <tr>
+                <th>技术负责人</th>
+                <td>胡* </td>
+            </tr>
+            <tr>
+                <th>项目负责人</th>
+                <td>郑*瑞 </td>
+            </tr>
+            <tr>
+                <th>工作内容</th>
+                <td>灭火器、应急照明和疏散指示、消火栓系统、建筑防火、消防安全管理</td>
+            </tr>
+            <tr>
+                <th>签发日期</th>
+                <td>2026年03月17日</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- 检测人员打卡记录面板 -->
+    <div class="checkin-panel">
+        <div class="checkin-title">检测人员现场打卡记录</div>
+        <div class="checkin-desc">定位数据来自安星云平台 | ANXING119.COM</div>
+        
+        <div class="checkin-item">
+            <div class="avatar"></div>
+            <div class="checkin-name">郑*瑞</div>
+            <div class="checkin-log">
+                <span class="checkin-status">已完成 1 次打卡</span>
+            </div>
+        </div>
+        
+        <div class="checkin-item">
+            <div class="avatar"></div>
+            <div class="checkin-name">张*东</div>
+            <div class="checkin-log">
+                <span class="checkin-status">已完成 1 次打卡</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚信息 -->
+    <div class="footer">
+        <div>Copyright 2019-2026 Yunnan WOMI All Rights Reserved.</div>
+        <div>云南沃米科技有限公司 2019-2026 版权所有，禁止任何单位与个人复制！</div>
+        <div>滇ICP备19004401号-7</div>
+    </div>
+</body>
+</html>
